@@ -62,9 +62,46 @@ func handlerRegister(s *state, cmd command) error {
 		return fmt.Errorf("couldn't set current user: %w", err)
 	}
 
-	fmt.Printf("User created successfully!")
+	fmt.Printf("User created successfully!\n")
 	printUser(resp)
 	return nil
+}
+
+func handlerReset(s *state, cmd command) error {
+	if len(cmd.Args) != 0 {
+		return fmt.Errorf("usage: %s", cmd.Name)
+	}
+
+	err := s.db.DeleteUsers(context.Background())
+	if err != nil {
+		return fmt.Errorf("could not delete database")
+	}
+
+	fmt.Println("Database reset successfully!")
+	return nil
+}
+
+func handlerUsers(s *state, cmd command) error {
+	if len(cmd.Args) != 0 {
+		return fmt.Errorf("usage: %s", cmd.Name)
+	}
+
+	users, err := s.db.GetUsers(context.Background())
+	if err != nil {
+		return fmt.Errorf("Could not fetch users. Error -> %w", err)
+	}
+
+	current_user := s.cfg.CurrentUserName
+
+	for _, user := range users {
+		if user.Name == current_user {
+			fmt.Printf("* %v (current)\n", user.Name)
+			continue
+		}
+		fmt.Printf("* %v\n", user.Name)
+	}
+
+	return nil 
 }
 
 func printUser(user database.User) {
