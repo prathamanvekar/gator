@@ -15,21 +15,21 @@ func handlerAddFeed(s *state, cmd command) error {
 	}
 	name := cmd.Args[0]
 	url := cmd.Args[1]
-	
+
 	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
 	if err != nil {
-		return fmt.Errorf("Error getting user: %v", err)
+		return fmt.Errorf("error getting user: %v", err)
 	}
 
 
 	feedID := uuid.New()
 	feed, err := s.db.CreateFeed(context.Background(), database.CreateFeedParams{
-		ID: feedID,
+		ID:        feedID,
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
-		Name: name,
-		Url: url,
-		UserID: user.ID,
+		Name:      name,
+		Url:       url,
+		UserID:    user.ID,
 	})
 	if err != nil {
 		return fmt.Errorf("Error creating user: %v", err)
