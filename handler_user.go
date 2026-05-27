@@ -20,7 +20,7 @@ func handlerLogin(s *state, cmd command) error {
 	if err != nil {
 		return fmt.Errorf("user %q does not exist", name)
 	}
-	
+
 	err = s.cfg.SetUser(name)
 	if err != nil {
 		return fmt.Errorf("couldn't set current user: %w", err)
@@ -42,16 +42,16 @@ func handlerRegister(s *state, cmd command) error {
 	}
 
 	if err != sql.ErrNoRows {
-	    return err
+		return err
 	}
-	
+
 	userID := uuid.New()
-	
+
 	resp, err := s.db.CreateUser(context.Background(), database.CreateUserParams{
-		ID: userID,
+		ID:        userID,
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
-		Name: name,
+		Name:      name,
 	})
 	if err != nil {
 		return err
@@ -88,20 +88,20 @@ func handlerUsers(s *state, cmd command) error {
 
 	users, err := s.db.GetUsers(context.Background())
 	if err != nil {
-		return fmt.Errorf("Could not fetch users. Error -> %w", err)
+		return fmt.Errorf(`could not fetch users. Error -> %w`, err)
 	}
 
-	current_user := s.cfg.CurrentUserName
+	currentUser := s.cfg.CurrentUserName
 
 	for _, user := range users {
-		if user.Name == current_user {
+		if user.Name == currentUser {
 			fmt.Printf("* %v (current)\n", user.Name)
 			continue
 		}
 		fmt.Printf("* %v\n", user.Name)
 	}
 
-	return nil 
+	return nil
 }
 
 func printUser(user database.User) {
