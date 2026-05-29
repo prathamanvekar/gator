@@ -21,9 +21,9 @@ func main() {
 		log.Fatalf("error reading config: %v", err)
 	}
 
-	dbUrl := cfg.DBURL
+	dbURL := cfg.DBURL
 
-	db, err := sql.Open("postgres", dbUrl)
+	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
 		log.Fatalf("could not connect to db: %v", err)
 	}
@@ -47,6 +47,8 @@ func main() {
 	cmds.register("agg", handlerAgg)
 	cmds.register("addfeed", handlerAddFeed)
 	cmds.register("feeds", handlerFeeds)
+	cmds.register("follow", handlerFollow)
+	cmds.register("following", handlerFollowing)
 
 	if len(os.Args) < 2 {
 		log.Fatal("Usage: cli <command> [args...]")

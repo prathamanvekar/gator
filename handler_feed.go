@@ -34,6 +34,24 @@ func handlerAddFeed(s *state, cmd command) error {
 		return fmt.Errorf(`error creating user: %v`, err)
 	}
 
+	follow_record_id := uuid.New()
+	follow_record, err := s.db.CreateFeedFollow(context.Background(), database.CreateFeedFollowParams{
+		ID: follow_record_id,
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
+		UserID: user.ID,
+		FeedID: feed.ID,
+	})
+	if err != nil {
+		return fmt.Errorf("error creating feed follow record: %v", err)
+	}
+
+	fmt.Print("Followed Too!\n")
+	fmt.Printf("Feed: %s\n", follow_record.FeedName)
+	fmt.Printf("User: %s\n", follow_record.UserName)
+
+	
+	fmt.Print("Added!\n")
 	fmt.Printf("ID: %v\n", feed.ID)
 	fmt.Printf("CreatedAt: %v\n", feed.CreatedAt)
 	fmt.Printf("UpdatedAt: %v\n", feed.UpdatedAt)
