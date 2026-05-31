@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"encoding/xml"
+	"fmt"
 	"html"
 	"io"
 	"net/http"
 	"time"
+	"log"
 )
 
 type RSSFeed struct {
@@ -61,5 +63,29 @@ func fetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
 	}
 
 	return &rssFeed, nil
+}
+
+func scrapeFeeds(s *state)  {
+	next_feed, err := s.db.GetNextFeedToFetch(context.Background())
+	if err != nil {
+		fmt.Printf("error getting the next feed to fetch: %v\n", err)
+		return
+	}
+	marked_feed, err :=  s.db.MarkFeedFetched(context.Background(), next_feed.ID)
+	if err != nil {
+		fmt.Printf("error marking the feed as fetched: %v\n", err)
+		return
+	}
+	feed, err := fetchFeed(context.Background(), marked_feed.Url)
+	if err != nil {
+		fmt.Printf("error fetching feed: %v\n", err)
+		return
+	}
+	fmt.Printf("Titles:\n")
+	for _, v :=  range feed.Channel.Item {
+		fmt.Printf("Found post -> * %s\n", v.Title)
+	}
+	log.Printf("Feed %s collected, %v posts found", marked_feed.Name, len(feed.Channel.Item))
+
 }
 

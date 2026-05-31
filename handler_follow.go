@@ -9,7 +9,6 @@ import (
 	"github.com/prathamanvekar/gator/internal/database"
 )
 
-
 func handlerFollow(s *state, cmd command, user database.User) error {
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("usage: %s <url>", cmd.Name)
@@ -21,13 +20,13 @@ func handlerFollow(s *state, cmd command, user database.User) error {
 	if err != nil {
 		return fmt.Errorf("error getting feed: %v", err)
 	}
-	
+
 	follow_record, err := s.db.CreateFeedFollow(context.Background(), database.CreateFeedFollowParams{
-		ID: follow_record_id,
+		ID:        follow_record_id,
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
-		UserID: user.ID,
-		FeedID: feed.ID,
+		UserID:    user.ID,
+		FeedID:    feed.ID,
 	})
 	if err != nil {
 		return fmt.Errorf("error creating feed follow record: %v", err)
@@ -36,11 +35,9 @@ func handlerFollow(s *state, cmd command, user database.User) error {
 	fmt.Print("Followed %v!\n", cmd.Args[0])
 	fmt.Printf("Feed: %s\n", follow_record.FeedName)
 	fmt.Printf("User: %s\n", follow_record.UserName)
-	
 
 	return nil
 }
-
 
 func handlerFollowing(s *state, cmd command, user database.User) error {
 	if len(cmd.Args) != 0 {
@@ -64,10 +61,10 @@ func handlerUnfollow(s *state, cmd command, user database.User) error {
 		return fmt.Errorf("usage: %s <url>", cmd.Name)
 	}
 	feed, err := s.db.GetFeed(context.Background(), cmd.Args[0])
-	if err != nil  {
+	if err != nil {
 		return fmt.Errorf("error getting feed: %v", err)
 	}
-	
+
 	err = s.db.DeleteFeedFollowRecord(context.Background(), database.DeleteFeedFollowRecordParams{
 		UserID: user.ID,
 		FeedID: feed.ID,
@@ -78,7 +75,6 @@ func handlerUnfollow(s *state, cmd command, user database.User) error {
 
 	fmt.Print("Record Deleted!\n")
 	fmt.Printf("Unfollowed %s!\n", cmd.Args[0])
-	
+
 	return nil
 }
-
