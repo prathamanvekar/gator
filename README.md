@@ -1,33 +1,50 @@
-# first and foremost do this
-- git clone this repo
+# gator
 
-# must haves to run the program
-- PostgreSQL installed.
-- Go installed.
+a minimal rss feed aggregator cli.
 
-# to have the gator cli
-- after cloning
-```
-go build -o gator/gator.exe
-```
-- and then
-``` 
+## prereqs
+
+- go
+- postgresql
+
+## setup
+
+1. clone the repo
+2. install the cli:
+
+```sh
 go install
 ```
-- this will avail the gator as a cli app in go bin directory
 
-# setup configs and running the program
-- make a .gatorconfig.json file containing the fields db_url and currentUserName in the home directory of ur system
-- once that is done, init the psql and run the migrations and sqlc generate
-- and use go run . <cmd name> <args> / gator <cmd name> <args> to run the program
+this makes `gator` available in your go bin directory.
 
-# commands u can run
-- register
-- reset
-- login
-- users
-- addFeed
-- follow
-- following
-- browse
-- agg
+3. config:
+   create `~/.gatorconfig.json` in your home directory:
+
+```json
+{
+    "db_url": "postgres://user:pass@localhost:5432/gator?sslmode=disable",
+    "current_user_name": ""
+}
+```
+
+4. database:
+   run goose migrations from `sql/schema` to initialize the database.
+
+## usage
+
+run `gator <command> [args...]`
+
+**commands:**
+
+- `register <name>` - create a new user and log in
+- `login <name>` - switch active user
+- `users` - list all users
+- `reset` - wipe the database
+- `addfeed <name> <url>` - add a new rss feed and follow it
+- `feeds` - list all available feeds
+- `follow <url>` - follow an existing feed
+- `unfollow <url>` - unfollow a feed
+- `following` - list your followed feeds
+- `browse [limit]` - view recent posts from followed feeds
+- `agg <interval>` - start the background scraper (e.g. `1m`, `1h`)
