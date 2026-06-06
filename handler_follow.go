@@ -9,20 +9,22 @@ import (
 	"github.com/prathamanvekar/gator/internal/database"
 )
 
+// handlerFollow allows a user to follow an existing feed by providing its URL.
+// It retrieves the feed by URL and creates a new follow record.
 func handlerFollow(s *state, cmd command, user database.User) error {
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("usage: %s <url>", cmd.Name)
 	}
 
-	follow_record_id := uuid.New()
+	followRecordID := uuid.New()
 
 	feed, err := s.db.GetFeed(context.Background(), cmd.Args[0])
 	if err != nil {
 		return fmt.Errorf("error getting feed: %v", err)
 	}
 
-	follow_record, err := s.db.CreateFeedFollow(context.Background(), database.CreateFeedFollowParams{
-		ID:        follow_record_id,
+	followRecord, err := s.db.CreateFeedFollow(context.Background(), database.CreateFeedFollowParams{
+		ID:        followRecordID,
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 		UserID:    user.ID,
@@ -32,13 +34,15 @@ func handlerFollow(s *state, cmd command, user database.User) error {
 		return fmt.Errorf("error creating feed follow record: %v", err)
 	}
 
-	fmt.Print("Followed %v!\n", cmd.Args[0])
-	fmt.Printf("Feed: %s\n", follow_record.FeedName)
-	fmt.Printf("User: %s\n", follow_record.UserName)
+	fmt.Printf("Followed %s!\n", cmd.Args[0])
+	fmt.Printf("Feed: %s\n", followRecord.FeedName)
+	fmt.Printf("User: %s\n", followRecord.UserName)
 
 	return nil
 }
 
+// handlerFollowing displays a list of all feeds the currently logged-in
+// user is following.
 func handlerFollowing(s *state, cmd command, user database.User) error {
 	if len(cmd.Args) != 0 {
 		return fmt.Errorf("usage: %s", cmd.Name)
@@ -56,6 +60,8 @@ func handlerFollowing(s *state, cmd command, user database.User) error {
 	return nil
 }
 
+// handlerUnfollow removes a feed follow record for the currently logged-in user,
+// allowing them to stop following a specific feed by its URL.
 func handlerUnfollow(s *state, cmd command, user database.User) error {
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("usage: %s <url>", cmd.Name)

@@ -10,6 +10,8 @@ import (
 	"github.com/prathamanvekar/gator/internal/database"
 )
 
+// handlerLogin switches the current user by updating the configuration
+// if the specified user exists in the database.
 func handlerLogin(s *state, cmd command) error {
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("usage: %s <name>", cmd.Name)
@@ -30,6 +32,8 @@ func handlerLogin(s *state, cmd command) error {
 	return nil
 }
 
+// handlerRegister creates a new user in the database and automatically
+// logs them in by updating the configuration.
 func handlerRegister(s *state, cmd command) error {
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("usage: %s <name>", cmd.Name)
@@ -67,6 +71,8 @@ func handlerRegister(s *state, cmd command) error {
 	return nil
 }
 
+// handlerReset deletes all users and related data from the database.
+// This is an administrative command useful for development/testing.
 func handlerReset(s *state, cmd command) error {
 	if len(cmd.Args) != 0 {
 		return fmt.Errorf("usage: %s", cmd.Name)
@@ -74,13 +80,15 @@ func handlerReset(s *state, cmd command) error {
 
 	err := s.db.DeleteUsers(context.Background())
 	if err != nil {
-		return fmt.Errorf("could not delete database")
+		return fmt.Errorf("could not delete users")
 	}
 
 	fmt.Println("Database reset successfully!")
 	return nil
 }
 
+// handlerUsers lists all users in the database, highlighting the
+// currently logged-in user.
 func handlerUsers(s *state, cmd command) error {
 	if len(cmd.Args) != 0 {
 		return fmt.Errorf("usage: %s", cmd.Name)
@@ -104,6 +112,7 @@ func handlerUsers(s *state, cmd command) error {
 	return nil
 }
 
+// printUser prints the details of a database user object to standard output.
 func printUser(user database.User) {
 	fmt.Printf(" * ID:      %v\n", user.ID)
 	fmt.Printf(" * Name:    %v\n", user.Name)

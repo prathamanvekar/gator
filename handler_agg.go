@@ -5,6 +5,9 @@ import (
 	"time"
 )
 
+// handlerAgg starts an infinite loop that periodically scrapes RSS feeds
+// at the specified interval. This allows the application to continuously
+// fetch new posts from followed feeds in the background.
 func handlerAgg(s *state, cmd command) error {
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("usage: %s <time_between_reqs>", cmd.Name)
